@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: booking-system
+    env: python
+    plan: free
+    region: oregon
+    repo: https://github.com/Adahan122/booking-system
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
