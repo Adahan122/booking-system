@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус аудиторий</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Статус аудиторий</h1>
+        
+        <div class="header-info">
+            <div class="current-time">
+                Дата: {{ today }} | Время: {{ current_time }}
+            </div>
+            <a href="/" class="back-link">← Назад к бронированию</a>
+        </div>
+        
+        <div class="stats-overview">
+            <div class="stat-card free-stat">
+                <h3>Свободные аудитории</h3>
+                <p class="count">{{ free_classrooms|length }}</p>
+            </div>
+            <div class="stat-card booked-stat">
+                <h3>Занятые аудитории</h3>
+                <p class="count">{{ booked_classrooms|length }}</p>
+            </div>
+            <div class="stat-card total-stat">
+                <h3>Всего аудиторий</h3>
+                <p class="count">{{ free_classrooms|length + booked_classrooms|length }}</p>
+            </div>
+        </div>
+        
+        <div class="status-sections">
+            <!-- Занятые аудитории -->
+            <div class="status-section booked-section">
+                <h2>🎯 Занятые аудитории ({{ booked_classrooms|length }})</h2>
+                {% if booked_classrooms %}
+                <div class="booked-list">
+                    {% for item in booked_classrooms %}
+                    <div class="booked-item">
+                        <div class="booked-header">
+                            <h3>{{ item.classroom.name }}</h3>
+                            <span class="occupied-badge">ЗАНЯТА</span>
+                        </div>
+                        <div class="booked-details">
+                            <p><strong>Кем:</strong> {{ item.booking.user_name }}</p>
+                            <p><strong>Цель:</strong> {{ item.booking.purpose }}</p>
+                            <p><strong>Время:</strong> {{ item.booking.start_time[:5] }} - {{ item.booking.end_time[:5] }}</p>
+                            <p><strong>Освободится в:</strong> {{ item.booking.end_time[:5] }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-message">Нет занятых аудиторий в текущее время</p>
+                {% endif %}
+            </div>
+            
+            <!-- Свободные аудитории -->
+            <div class="status-section free-section">
+                <h2>✅ Свободные аудитории ({{ free_classrooms|length }})</h2>
+                {% if free_classrooms %}
+                <div class="free-list">
+                    {% for classroom in free_classrooms %}
+                    <div class="free-item">
+                        <div class="free-header">
+                            <h3>{{ classroom.name }}</h3>
+                            <span class="free-badge">СВОБОДНА</span>
+                        </div>
+                        <div class="free-details">
+                            <p><strong>Вместимость:</strong> {{ classroom.capacity }} человек</p>
+                            <p><strong>Корпус:</strong> {{ classroom.building or 'Не указан' }}</p>
+                            <p><strong>Этаж:</strong> {{ classroom.floor or 'Не указан' }}</p>
+                            <a href="/book/{{ classroom.id }}?date={{ today }}" class="quick-book-btn">
+                                Забронировать сейчас
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-message">Нет свободных аудиторий</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Автообновление страницы каждую минуту
+        setInterval(() => {
+            location.reload();
+        }, 60000);
+        
+        // Обновление текущего времени
+        function updateCurrentTime() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('ru-RU');
+            const timeString = now.toLocaleTimeString('ru-RU');
+            
+            const timeElements = document.querySelectorAll('.current-time');
+            timeElements.forEach(el => {
+                el.innerHTML = `Дата: ${dateString} | Время: ${timeString}`;
+            });
+        }
+        
+        // Обновляем время каждую секунду
+        setInterval(updateCurrentTime, 1000);
+        updateCurrentTime();
+    </script>
+</body>
+</html>

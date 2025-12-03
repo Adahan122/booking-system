@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-calendar-plus"></i> Бронирование аудитории</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.classroom_id.label(class="form-label") }}
+                        {{ form.classroom_id(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.booking_date.label(class="form-label") }}
+                        {{ form.booking_date(class="form-control", type="date") }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.start_time.label(class="form-label") }}
+                                {{ form.start_time(class="form-select") }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.end_time.label(class="form-label") }}
+                                {{ form.end_time(class="form-select") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.purpose.label(class="form-label") }}
+                        {{ form.purpose(class="form-control", rows=3, placeholder="Опишите цель использования аудитории...") }}
+                    </div>
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fas fa-info-circle"></i> Как работает бронирование</h5>
+        </div>
+        <div class="card-body">
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker bg-success"></div>
+                    <div class="timeline-content">
+                        <h6>Бронирование создано</h6>
+                        <small>Аудитория зарезервирована за вами</small>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker bg-primary"></div>
+                    <div class="timeline-content">
+                        <h6>Время начала</h6>
+                        <small>Вы можете использовать аудиторию</small>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker bg-secondary"></div>
+                    <div class="timeline-content">
+                        <h6>Время окончания</h6>
+                        <small>Аудитория автоматически освобождается</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-clock me-2"></i>
+                <strong>Текущее время:</strong> 
+                <span class="current-time">{{ now.strftime('%H:%M') }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

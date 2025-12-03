@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Заголовок с навигацией -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="mb-0">
+                                <i class="fas fa-calendar-alt me-3"></i>
+                                Календарь бронирований
+                            </h1>
+                            <p class="text-muted mb-0">Месяц: {{ month_name }} {{ year }}</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('main.calendar_view', year=prev_year, month=prev_month) }}" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-chevron-left"></i> Предыдущий
+                            </a>
+                            <a href="{{ url_for('main.calendar_view') }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-calendar-day"></i> Текущий месяц
+                            </a>
+                            <a href="{{ url_for('main.calendar_view', year=next_year, month=next_month) }}" 
+                               class="btn btn-outline-primary">
+                                Следующий <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика месяца -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Статистика за {{ month_name.lower() }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="display-6 fw-bold text-primary">
+                                {{ bookings_by_date|length }}
+                            </div>
+                            <div class="text-muted">Дней с бронированиями</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="display-6 fw-bold text-success">
+                                {{ classroom_stats.values()|map(attribute='booking_count')|sum }}
+                            </div>
+                            <div class="text-muted">Всего бронирований</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="display-6 fw-bold text-info">
+                                {{ "%d"|format(classroom_stats.values()|map(attribute='total_hours')|sum) }}
+                            </div>
+                            <div class="text-muted">Часов занято</div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="display-6 fw-bold text-warning">
+                                {{ "%d%%"|format(classroom_stats.values()|map(attribute='utilization')|sum / classroom_stats|length if classroom_stats else 0) }}
+                            </div>
+                            <div class="text-muted">Средняя загрузка</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сам календарь -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Заголовки дней недели -->
+                    <div class="calendar-header">
+                        <div class="calendar-row">
+                            {% for day in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'] %}
+                            <div class="calendar-day-header">
+                                <strong>{{ day }}</strong>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Недели -->
+                    <div class="calendar-body">
+                        {% for week in calendar %}
+                        <div class="calendar-row">
+                            {% for day in week %}
+                            <div class="calendar-day {% if day == 0 %}empty{% endif %} 
+                                                  {% if day == today.day and month == today.month and year == today.year %}today{% endif %}">
+                                {% if day != 0 %}
+                                <div class="day-number">
+                                    {{ day }}
+                                    {% if day == today.day and month == today.month and year == today.year %}
+                                    <span class="badge bg-primary">Сегодня</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Бронирования на этот день -->
+                                {% set date_str = '{}-{:02d}-{:02d}'.format(year, month, day) %}
+                                {% if date_str in bookings_by_date %}
+                                <div class="day-bookings">
+                                    {% for booking in bookings_by_date[date_str] %}
+                                    <div class="booking-item {% if booking.user_id == current_user.id %}my-booking{% endif %}
+                                                           {% if booking.status == 'pending' %}pending{% endif %}"
+                                         data-bs-toggle="tooltip"
+                                         title="Аудитория {{ booking.classroom.room_number }}
+{{ booking.start_time.strftime('%H:%M') }} - {{ booking.end_time.strftime('%H:%M') }}
+{{ booking.user.username }}: {{ booking.purpose }}">
+                                        <small>
+                                            <i class="fas {% if booking.classroom.has_projector %}fa-video{% else %}fa-door-closed{% endif %} me-1"></i>
+                                            {{ booking.classroom.room_number }} 
+                                            ({{ booking.start_time.strftime('%H:%M') }})
+                                            {% if booking.user_id == current_user.id %}
+                                            <i class="fas fa-user ms-1"></i>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Кнопка быстрого бронирования -->
+                                {% set day_date = date(year, month, day) %}
+                                {% if day_date >= today and day_date <= today + timedelta(days=30) %}
+                                <div class="mt-2">
+                                    <a href="{{ url_for('main.booking') }}?date={{ day_date.strftime('%Y-%m-%d') }}" 
+                                       class="btn btn-sm btn-outline-primary w-100">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Легенда -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6><i class="fas fa-info-circle me-2"></i>Легенда календаря:</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="d-flex align-items-center">
+                            <div class="legend-color bg-primary me-2"></div>
+                            <small>Сегодня</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="legend-color bg-success me-2"></div>
+                            <small>Ваше бронирование</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="legend-color bg-secondary me-2"></div>
+                            <small>Чужое бронирование</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="legend-color bg-warning me-2"></div>
+                            <small>Ожидает подтверждения</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика по аудиториям -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Загрузка аудиторий</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Аудитория</th>
+                                    <th>Кол-во бронирований</th>
+                                    <th>Часов занято</th>
+                                    <th>Загрузка</th>
+                                    <th>Проектор</th>
+                                    <th>Компьютеры</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in classroom_stats.values()|sort(attribute='booking_count', reverse=True) %}
+                                <tr>
+                                    <td><strong>{{ stat.room_number }}</strong></td>
+                                    <td>{{ stat.booking_count }}</td>
+                                    <td>{{ stat.total_hours }} ч.</td>
+                                    <td>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar {% if stat.utilization > 70 %}bg-danger{% elif stat.utilization > 40 %}bg-warning{% else %}bg-success{% endif %}" 
+                                                 >
+                                            </div>
+                                        </div>
+                                        <small>{{ "%.1f"|format(stat.utilization) }}%</small>
+                                    </td>
+                                    <td>
+                                        {% set classroom = classrooms|selectattr('room_number', 'equalto', stat.room_number)|first %}
+                                        {% if classroom.has_projector %}
+                                            <i class="fas fa-check text-success"></i>
+                                        {% else %}
+                                            <i class="fas fa-times text-danger"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if classroom.has_computers %}
+                                            <i class="fas fa-check text-success"></i>
+                                        {% else %}
+                                            <i class="fas fa-times text-danger"></i>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Стили для календаря */
+.calendar-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px 10px 0 0;
+    padding: 15px 0;
+}
+
+.calendar-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #e9ecef;
+}
+
+.calendar-day-header {
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    padding: 10px;
+}
+
+.calendar-day {
+    background: white;
+    min-height: 120px;
+    padding: 10px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.calendar-day.empty {
+    background: #f8f9fa;
+    border: none;
+}
+
+.calendar-day.today {
+    background: #e7f1ff;
+    border: 2px solid var(--primary-color);
+}
+
+.calendar-day:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.day-number {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-bookings {
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+.booking-item {
+    padding: 3px 6px;
+    margin-bottom: 3px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.booking-item.my-booking {
+    background: #d4edda;
+    color: #155724;
+    border-left: 3px solid #28a745;
+}
+
+.booking-item:not(.my-booking) {
+    background: #f8f9fa;
+    color: #6c757d;
+    border-left: 3px solid #6c757d;
+}
+
+.booking-item.pending {
+    background: #fff3cd;
+    color: #856404;
+    border-left: 3px solid #ffc107;
+}
+
+.booking-item:hover {
+    transform: translateX(3px);
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 80px;
+        padding: 5px;
+        font-size: 12px;
+    }
+    
+    .day-number {
+        font-size: 14px;
+    }
+    
+    .booking-item {
+        font-size: 9px;
+        padding: 2px 4px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация тултипов
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+    
+    // Автоматическая прокрутка к сегодняшнему дню
+    const todayElement = document.querySelector('.calendar-day.today');
+    if (todayElement) {
+        todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+</script>
+{% endblock %}

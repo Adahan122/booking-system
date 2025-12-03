@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-white"><i class="fas fa-door-open"></i> Список аудиторий</h1>
+            <p class="text-white opacity-75">Всего доступно аудиторий: {{ classrooms|length }}</p>
+        </div>
+    </div>
+
+    <!-- Легенда статусов -->
+    <!-- <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Легенда статусов:</h6>
+                            <div class="d-flex flex-wrap gap-3 mt-2">
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator bg-success me-2"></span>
+                                    <small>Свободна</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator bg-danger me-2"></span>
+                                    <small>Занята сейчас</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-projector text-info me-2"></i>
+                                    <small>С проектором</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-desktop text-primary me-2"></i>
+                                    <small>Компьютерный класс</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+                                <i class="fas fa-redo"></i> Обновить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Фильтры -->
+
+    <div class="row mb-4 fade-in">
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h5 class="mb-3 fw-semibold text-primary">
+                            <i class="bi bi-info-circle-fill me-2"></i>Легенда статусов
+                        </h5>
+                        <div class="d-flex flex-wrap gap-4 mt-3">
+                            <div class="d-flex align-items-center bg-light rounded-pill px-3 py-2">
+                                <div class="status-indicator bg-success me-2 rounded-circle" style="width: 12px; height: 12px;"></div>
+                                <span class="fw-medium">Свободна</span>
+                            </div>
+                            <div class="d-flex align-items-center bg-light rounded-pill px-3 py-2">
+                                <div class="status-indicator bg-danger me-2 rounded-circle" style="width: 12px; height: 12px;"></div>
+                                <span class="fw-medium">Занята сейчас</span>
+                            </div>
+                            <div class="d-flex align-items-center bg-light rounded-pill px-3 py-2">
+                                <i class="bi bi-tv text-info me-2"></i>
+                                <span class="fw-medium">С проектором</span>
+                            </div>
+                            <div class="d-flex align-items-center bg-light rounded-pill px-3 py-2">
+                                <i class="bi bi-pc-display text-primary me-2"></i>
+                                <span class="fw-medium">Компьютерный класс</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-refresh" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Обновить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="fas fa-filter me-2"></i>Фильтры</h6>
+                    <form method="GET" action="{{ url_for('main.classrooms') }}" id="filterForm">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Статус:</label>
+                                <select class="form-select" name="status" id="statusFilter">
+                                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Все аудитории</option>
+                                    <option value="free" {% if status_filter == 'free' %}selected{% endif %}>Только свободные</option>
+                                    <option value="occupied" {% if status_filter == 'occupied' %}selected{% endif %}>Только занятые</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Оборудование:</label>
+                                <select class="form-select" name="equipment" id="equipmentFilter">
+                                    <option value="all" {% if equipment_filter == 'all' %}selected{% endif %}>Любое оборудование</option>
+                                    <option value="projector" {% if equipment_filter == 'projector' %}selected{% endif %}>С проектором</option>
+                                    <option value="computers" {% if equipment_filter == 'computers' %}selected{% endif %}>Компьютерные классы</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Этаж:</label>
+                                <select class="form-select" name="floor" id="floorFilter">
+                                    <option value="all" {% if floor_filter == 'all' %}selected{% endif %}>Все этажи</option>
+                                    <option value="4" {% if floor_filter == '4' %}selected{% endif %}>4 этаж</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="d-grid w-100">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>Применить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сообщение если нет результатов -->
+    {% if classrooms|length == 0 %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-door-closed fa-3x text-muted mb-3"></i>
+                    <h4>Аудитории не найдены</h4>
+                    <p class="text-muted">Попробуйте изменить параметры фильтрации</p>
+                    <a href="{{ url_for('main.classrooms') }}" class="btn btn-primary">
+                        <i class="fas fa-times me-2"></i>Сбросить фильтры
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Список аудиторий -->
+    <div class="row">
+        {% for classroom in classrooms %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if classroom.is_occupied_now %}card-occupied pulse-red{% else %}card-free{% endif %}">
+                <div class="card-body">
+                    <!-- Заголовок с статусом -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-door-closed me-2"></i>
+                                Аудитория {{ classroom.room_number }}
+                            </h5>
+                            <small class="text-muted">Этаж: {{ classroom.floor }}</small>
+                        </div>
+                        <div>
+                            {% if classroom.is_occupied_now %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-user-clock me-1"></i>Занята
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Свободна
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Статус занятости -->
+                    {% if classroom.is_occupied_now %}
+                    <div class="alert alert-danger mb-3 py-2">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Занята до {{ classroom.occupied_until.strftime('%H:%M') }}</strong><br>
+                                <small>Студент: {{ classroom.occupied_by }}</small><br>
+                                <small>Цель: {{ classroom.booking_purpose }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Информация об аудитории -->
+                    <div class="classroom-info mb-3">
+                        <p class="mb-2">
+                            <i class="fas fa-users text-muted me-2"></i>
+                            <strong>Вместимость:</strong> {{ classroom.capacity }} чел.
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-tools text-muted me-2"></i>
+                            <strong>Оборудование:</strong>
+                        </p>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% if classroom.has_projector %} 
+                                <span class="badge bg-info">
+                                    <i class="fas fa-video me-1"></i>Проектор
+                                </span>
+                            {% endif %}
+                            {% if classroom.has_computers %} 
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-desktop me-1"></i>Компьютеры
+                                </span>
+                            {% endif %}
+                            {% if not classroom.has_projector and not classroom.has_computers %}
+                                <span class="badge bg-secondary">Базовое</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Расписание на сегодня -->
+                    {% if classroom.today_bookings %}
+                    <div class="mb-3">
+                        <p class="mb-2"><strong><i class="fas fa-calendar-day me-1"></i>Расписание на сегодня:</strong></p>
+                        <div class="schedule-timeline">
+                            {% for booking in classroom.today_bookings %}
+                            <div class="schedule-item {% if booking.start_time <= now.time() and booking.end_time > now.time() %}active{% endif %}">
+                                <div class="schedule-time">
+                                    {{ booking.start_time.strftime('%H:%M') }} - {{ booking.end_time.strftime('%H:%M') }}
+                                </div>
+                                <div class="schedule-info">
+                                    <small>{{ booking.user.username }}</small>
+                                    <small class="text-muted">{{ booking.purpose|truncate(20) }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Кнопки действий -->
+                    <div class="d-grid gap-2">
+                        {% if current_user.is_authenticated %}
+                            {% if classroom.is_occupied_now %}
+                                <button class="btn btn-outline-danger" disabled>
+                                    <i class="fas fa-ban me-2"></i>Сейчас занята
+                                </button>
+                            {% else %}
+                                <a href="{{ url_for('main.booking') }}?classroom={{ classroom.id }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-calendar-plus me-2"></i>Забронировать
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Войдите для бронирования
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Кнопка проверки доступности -->
+                        <button class="btn btn-outline-info btn-sm check-availability-btn"
+                                data-classroom-id="{{ classroom.id }}"
+                                data-classroom-number="{{ classroom.room_number }}">
+                            <i class="fas fa-check-circle me-2"></i>Проверить доступность
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Футер с дополнительной информацией -->
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            {% if classroom.is_occupied_now %}
+                                Освободится в {{ classroom.occupied_until.strftime('%H:%M') }}
+                            {% else %}
+                                Сейчас свободна
+                            {% endif %}
+                        </small>
+                        {% if classroom.is_occupied_now %}
+                        <small class="text-danger">
+                            <i class="fas fa-user me-1"></i>{{ classroom.occupied_by }}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Статистика -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-number display-6 fw-bold">{{ classrooms|length }}</div>
+                            <div class="stat-label text-muted">Найдено аудиторий</div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-number display-6 fw-bold text-success">
+                                {{ classrooms|selectattr('is_occupied_now', 'equalto', false)|list|length }}
+                            </div>
+                            <div class="stat-label text-muted">Свободно сейчас</div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-number display-6 fw-bold text-danger">
+                                {{ classrooms|selectattr('is_occupied_now', 'equalto', true)|list|length }}
+                            </div>
+                            <div class="stat-label text-muted">Занято сейчас</div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="stat-number display-6 fw-bold text-primary">
+                                {{ classrooms|selectattr('has_projector', 'equalto', true)|list|length }}
+                            </div>
+                            <div class="stat-label text-muted">С проекторами</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно проверки доступности -->
+<div class="modal fade" id="availabilityModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Проверка доступности аудитории <span id="modalClassroomNumber"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="availabilityForm">
+                    <input type="hidden" id="classroomId">
+                    <div class="mb-3">
+                        <label class="form-label">Дата:</label>
+                        <input type="date" class="form-control" id="checkDate" required
+                               min="{{ now.strftime('%Y-%m-%d') }}"
+                               max="{{ max_date.strftime('%Y-%m-%d') }}"
+                               value="{{ now.strftime('%Y-%m-%d') }}">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Время начала:</label>
+                                <select class="form-select" id="checkStartTime" required>
+                                    <option value="08:00">08:00</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="20:00">20:00</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Время окончания:</label>
+                                <select class="form-select" id="checkEndTime" required>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="20:00">20:00</option>
+                                    <option value="21:00">21:00</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Проверить доступность
+                        </button>
+                    </div>
+                </form>
+                <div id="availabilityResult" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка кнопок проверки доступности
+    document.querySelectorAll('.check-availability-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const classroomId = this.dataset.classroomId;
+            const classroomNumber = this.dataset.classroomNumber;
+            
+            document.getElementById('modalClassroomNumber').textContent = classroomNumber;
+            document.getElementById('classroomId').value = classroomId;
+            
+            const modal = new bootstrap.Modal(document.getElementById('availabilityModal'));
+            modal.show();
+        });
+    });
+    
+    // Обработка формы проверки доступности
+    document.getElementById('availabilityForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const classroomId = document.getElementById('classroomId').value;
+        const date = document.getElementById('checkDate').value;
+        const startTime = document.getElementById('checkStartTime').value;
+        const endTime = document.getElementById('checkEndTime').value;
+        
+        const resultDiv = document.getElementById('availabilityResult');
+        resultDiv.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+                <p class="mt-2">Проверка доступности...</p>
+            </div>
+        `;
+        
+        fetch(`/api/check_availability/${classroomId}/${date}/${startTime}/${endTime}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_available) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Аудитория свободна!</strong><br>
+                            Вы можете забронировать аудиторию на ${date} с ${startTime} до ${endTime}.
+                            <div class="mt-2">
+                                <a href="/booking?classroom=${classroomId}&date=${date}&start=${startTime}&end=${endTime}" 
+                                   class="btn btn-sm btn-success">
+                                    <i class="fas fa-calendar-plus me-2"></i>Забронировать сейчас
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i>
+                            <strong>Аудитория занята</strong><br>
+                            Время конфликтует с существующим бронированием.
+                            <div class="mt-2">
+                                <strong>Детали конфликта:</strong><br>
+                                Пользователь: ${data.conflict.user}<br>
+                                Время: ${data.conflict.time}<br>
+                                Цель: ${data.conflict.purpose}
+                            </div>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Ошибка при проверке доступности
+                    </div>
+                `;
+            });
+    });
+    
+    // Автоматическое обновление страницы каждые 60 секунд
+    setInterval(() => {
+        const statusBadges = document.querySelectorAll('.badge.bg-success, .badge.bg-danger');
+        statusBadges.forEach(badge => {
+            badge.classList.add('pulse');
+            setTimeout(() => badge.classList.remove('pulse'), 1000);
+        });
+    }, 60000);
+});
+</script>
+{% endblock %}

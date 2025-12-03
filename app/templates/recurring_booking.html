@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-redo me-2"></i>Регулярное бронирование</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Регулярное бронирование</strong> позволяет создать серию бронирований 
+                        на одно и то же время в определенные дни недели. Идеально для регулярных занятий, 
+                        кружков и повторяющихся мероприятий.
+                    </div>
+                    
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.classroom_id.label(class="form-label") }}
+                                    {{ form.classroom_id(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.day_of_week.label(class="form-label") }}
+                                    {{ form.day_of_week(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.start_date.label(class="form-label") }}
+                                    {{ form.start_date(class="form-control", type="date") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form.end_date.label(class="form-label") }}
+                                    {{ form.end_date(class="form-control", type="date") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.start_time.label(class="form-label") }}
+                                    {{ form.start_time(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.end_time.label(class="form-label") }}
+                                    {{ form.end_time(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    {{ form.recurrence_type.label(class="form-label") }}
+                                    {{ form.recurrence_type(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.purpose.label(class="form-label") }}
+                            {{ form.purpose(class="form-control", rows=3, placeholder="Опишите цель регулярного использования...") }}
+                        </div>
+                        
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-success btn-lg") }}
+                        </div>
+                    </form>
+                    
+                    <!-- Предварительный просмотр -->
+                    <div class="mt-4">
+                        <h5><i class="fas fa-calendar-check me-2"></i>Будут созданы бронирования:</h5>
+                        <div id="previewContainer" class="mt-2">
+                            <div class="alert alert-secondary">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                Выберите параметры для предварительного просмотра
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const previewContainer = document.getElementById('previewContainer');
+    
+    function updatePreview() {
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        
+        for (const [key, value] of formData.entries()) {
+            params.append(key, value);
+        }
+        
+        fetch('/api/recurring_preview?' + params.toString())
+            .then(response => response.json())
+            .then(data => {
+                if (data.preview && data.preview.length > 0) {
+                    let html = '<div class="list-group">';
+                    data.preview.forEach((item, index) => {
+                        html += `
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${item.date}</strong> (${item.day_name})
+                                        <br>
+                                        <small>${item.time} - Аудитория ${item.room_number}</small>
+                                    </div>
+                                    <span class="badge ${item.available ? 'bg-success' : 'bg-danger'}">
+                                        ${item.available ? 'Свободно' : 'Занято'}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    previewContainer.innerHTML = html;
+                } else {
+                    previewContainer.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Нет доступных дат для бронирования с выбранными параметрами
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    
+    // Обновляем предварительный просмотр при изменении полей
+    ['classroom_id', 'start_date', 'end_date', 'day_of_week', 'start_time', 'end_time', 'recurrence_type'].forEach(field => {
+        document.getElementById(field).addEventListener('change', updatePreview);
+    });
+    
+    // Инициализируем предварительный просмотр
+    updatePreview();
+});
+</script>
+{% endblock %}

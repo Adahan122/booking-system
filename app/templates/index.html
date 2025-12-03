@@ -1,0 +1,113 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <!-- Герой секция -->
+  <div class="row align-items-center min-vh-50 py-5">
+    <div class="col-lg-6">
+      <h1 class="display-4 fw-bold text-white mb-4">
+        Бронирование аудиторий
+        <span class="gradient-text">стало проще</span>
+      </h1>
+      <p class="lead text-white mb-4 opacity-75">
+        Современная система для студентов и преподавателей. Бронируйте учебные помещения в несколько
+        кликов в любое время.
+      </p>
+      <div class="d-flex flex-wrap gap-3">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.booking') }}" class="btn btn-light btn-lg px-4">
+          <i class="fas fa-calendar-plus me-2"></i>Забронировать
+        </a>
+        <a href="{{ url_for('main.classrooms') }}" class="btn btn-outline-light btn-lg px-4">
+          <i class="fas fa-door-open me-2"></i>Аудитории
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-4">
+          <i class="fas fa-user-plus me-2"></i>Начать сейчас
+        </a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4">
+          <i class="fas fa-sign-in-alt me-2"></i>Войти
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-6 text-center">
+      <div class="card bg-transparent border-0">
+        <div class="card-body p-0">
+          <i class="fas fa-university display-1 text-white opacity-25"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Особенности -->
+  <div class="row py-5">
+    <div class="col-12 text-center mb-5">
+      <h2 class="text-white fw-bold">Почему выбирают нас?</h2>
+      <p class="text-white opacity-75">Все что нужно для комфортного бронирования</p>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 text-center fade-in-up">
+        <div class="card-body p-4">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-bolt text-primary display-6"></i>
+          </div>
+          <h5 class="fw-bold">Мгновенное бронирование</h5>
+          <p class="text-muted">Быстрый и удобный процесс бронирования в несколько кликов</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 text-center fade-in-up" style="animation-delay: 0.2s">
+        <div class="card-body p-4">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-shield-alt text-success display-6"></i>
+          </div>
+          <h5 class="fw-bold">Надежная система</h5>
+          <p class="text-muted">Автоматическая проверка доступности и предотвращение конфликтов</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 text-center fade-in-up" style="animation-delay: 0.4s">
+        <div class="card-body p-4">
+          <div class="feature-icon mb-3">
+            <i class="fas fa-mobile-alt text-warning display-6"></i>
+          </div>
+          <h5 class="fw-bold">Полная адаптивность</h5>
+          <p class="text-muted">Работает на всех устройствах - от компьютеров до смартфонов</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Статистика -->
+  <div class="row py-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body p-5">
+          <div class="row text-center">
+            <div class="col-md-3 mb-3">
+              <div class="stat-number display-6 fw-bold text-primary">{{ classroom_count }}</div>
+              <div class="stat-label text-muted">Аудиторий доступно</div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="stat-number display-6 fw-bold text-success">12</div>
+              <div class="stat-label text-muted">С проекторами</div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="stat-number display-6 fw-bold text-info">4</div>
+              <div class="stat-label text-muted">Компьютерных класса</div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="stat-number display-6 fw-bold text-warning">24/7</div>
+              <div class="stat-label text-muted">Доступ к системе</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1><i class="fas fa-cog"></i> Управление бронированиями</h1>
+    
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" href="#pending" data-bs-toggle="tab">
+                Ожидающие подтверждения ({{ pending_bookings|length }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#approved" data-bs-toggle="tab">
+                Одобренные бронирования ({{ approved_bookings|length }})
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="pending">
+            <h3>Бронирования, ожидающие подтверждения</h3>
+            
+            {% if pending_bookings %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Аудитория</th>
+                            <th>Студент</th>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Цель</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in pending_bookings %}
+                        <tr>
+                            <td>Аудитория {{ booking.classroom.room_number }}</td>
+                            <td>{{ booking.user.username }}</td>
+                            <td>{{ booking.booking_date.strftime('%d.%m.%Y') }}</td>
+                            <td>{{ booking.start_time.strftime('%H:%M') }} - {{ booking.end_time.strftime('%H:%M') }}</td>
+                            <td>{{ booking.purpose }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('main.approve_booking', booking_id=booking.id) }}" 
+                                       class="btn btn-success" 
+                                       onclick="return confirm('Одобрить это бронирование?')">
+                                        ✅ Одобрить
+                                    </a>
+                                    <a href="{{ url_for('main.reject_booking', booking_id=booking.id) }}" 
+                                       class="btn btn-danger" 
+                                       onclick="return confirm('Отклонить это бронирование?')">
+                                        ❌ Отклонить
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Нет бронирований, ожидающих подтверждения.
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="approved">
+            <h3>Одобренные бронирования</h3>
+            
+            {% if approved_bookings %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Аудитория</th>
+                            <th>Пользователь</th>
+                            <th>Роль</th>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Цель</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in approved_bookings %}
+                        <tr>
+                            <td>Аудитория {{ booking.classroom.room_number }}</td>
+                            <td>{{ booking.user.username }}</td>
+                            <td>{{ 'Преподаватель' if booking.user.role == 'teacher' else 'Студент' }}</td>
+                            <td>{{ booking.booking_date.strftime('%d.%m.%Y') }}</td>
+                            <td>{{ booking.start_time.strftime('%H:%M') }} - {{ booking.end_time.strftime('%H:%M') }}</td>
+                            <td>{{ booking.purpose }}</td>
+                            <td>
+                                <span class="badge bg-success">✅ Одобрено</span>
+                                <a href="{{ url_for('main.reject_booking', booking_id=booking.id) }}" 
+                                   class="btn btn-outline-danger btn-sm ms-2" 
+                                   onclick="return confirm('Отменить это бронирование?')">
+                                    ❌ Отменить
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Нет активных одобренных бронирований.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var triggerTabList = [].slice.call(document.querySelectorAll('a[data-bs-toggle="tab"]'))
+    triggerTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+        triggerEl.addEventListener('click', function (event) {
+            event.preventDefault()
+            tabTrigger.show()
+        })
+    })
+});
+</script>
+{% endblock %}
