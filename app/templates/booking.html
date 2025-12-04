@@ -37,7 +37,11 @@
                         {{ form.purpose(class="form-control", rows=3, placeholder="Опишите цель использования аудитории...") }}
                     </div>
                     <div class="d-grid">
-                        {{ form.submit(class="btn btn-success") }}
+                        {{ form.submit(class="btn btn-success", id='bookingSubmit') }}
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" id="checkAvailabilityBtn" class="btn btn-outline-primary">Проверить доступность</button>
+                        <div id="availabilityStatus" class="align-self-center"></div>
                     </div>
                 </form>
             </div>
@@ -83,4 +87,69 @@
 </div>
 </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Play attract animation on booking page to add delight
+    document.addEventListener('DOMContentLoaded', function(){
+        if (window.playAttract) window.playAttract(1000);
+    });
+
+    // Availability check logic
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const checkBtn = document.getElementById('checkAvailabilityBtn');
+        const statusEl = document.getElementById('availabilityStatus');
+        const submitBtn = document.getElementById('bookingSubmit');
+
+        function showStatus(message, type='secondary'){
+            statusEl.innerHTML = `<span class="badge bg-${type}">${message}</span>`;
+        }
+
+        if (!checkBtn || !form) return;
+
+        checkBtn.addEventListener('click', function(){
+            const classroom = form.querySelector('[name="classroom_id"]').value;
+            const bookingDate = form.querySelector('[name="booking_date"]').value;
+            const start = form.querySelector('[name="start_time"]').value;
+            const end = form.querySelector('[name="end_time"]').value;
+
+            if (!classroom || !bookingDate || !start || !end) {
+                showStatus('Выберите аудиторию, дату и время', 'warning');
+                return;
+            }
+
+            showStatus('Проверка...', 'info');
+
+            const url = `/api/check_availability/${encodeURIComponent(classroom)}/${encodeURIComponent(bookingDate)}/${encodeURIComponent(start)}/${encodeURIComponent(end)}`;
+
+            fetch(url, { credentials: 'same-origin' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showStatus('Ошибка: ' + data.error, 'danger');
+                        submitBtn.disabled = false;
+                        return;
+                    }
+
+                    if (data.is_available) {
+                        showStatus('Аудитория доступна ✔', 'success');
+                        submitBtn.disabled = false;
+                    } else {
+                        const conflict = data.conflict || {};
+                        const info = conflict.time ? ` (${conflict.time}${conflict.user ? ' — ' + conflict.user : ''})` : '';
+                        showStatus('Занято' + info, 'danger');
+                        // Prevent immediate booking when occupied
+                        submitBtn.disabled = true;
+                    }
+                })
+                .catch(err => {
+                    showStatus('Сетевой сбой', 'danger');
+                    console.error(err);
+                    submitBtn.disabled = false;
+                });
+        });
+    });
+</script>
 {% endblock %}
