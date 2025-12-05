@@ -27,13 +27,17 @@
     <style>
       :root {
         --primary-color: #4361ee;
+        --primary-light: #eef2ff;
         --secondary-color: #3a0ca3;
         --accent-color: #4cc9f0;
         --light-color: #f8f9fa;
         --dark-color: #212529;
-        --success-color: #4ade80;
-        --warning-color: #fbbf24;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
         --danger-color: #ef4444;
+        --border-radius: 12px;
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       * {
@@ -41,7 +45,7 @@
       }
 
       body {
-        background: linear-gradient(135deg, #000000 0%, #8dcaff 100%);
+        background: linear-gradient(135deg, #f0f7ff 0%, #000000 50%, #f8fafc 100%);
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -59,187 +63,387 @@
 
       /* Modern Navigation */
       .navbar {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-        padding: 1rem 0;
-        box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 0.75rem 0;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .navbar-dark {
+        background: rgba(15, 23, 42, 0.95);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       .navbar-brand {
         font-weight: 700;
-        font-size: 1.5rem;
-        background: linear-gradient(45deg, #f0f0f0);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        transition: all 0.3s ease;
+        color: var(--primary-color) !important;
+        transition: var(--transition);
+      }
+
+      .navbar-dark .navbar-brand {
+        color: #fff !important;
       }
 
       .navbar-brand:hover {
+        opacity: 0.9;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        color: #4b5563 !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 8px;
+        margin: 0 0.125rem;
+        transition: var(--transition);
+      }
+
+      .navbar-dark .nav-link {
+        color: #e5e7eb !important;
+      }
+
+      .nav-link:hover {
+        background-color: var(--primary-light);
+        color: var(--primary-color) !important;
         transform: translateY(-1px);
       }
-      /* Attractors removed (user requested) */
 
-      /* Page loader removed per user request */
+      .navbar-dark .nav-link:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+      }
+
+      .nav-link.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white !important;
+        box-shadow: var(--box-shadow);
+      }
+
+      /* User Avatar */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        position: relative;
+      }
+
+      .user-status {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid white;
+      }
+
+      /* Main Content Cards */
+      .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        overflow: hidden;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        padding: 1.25rem;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 8px;
+        padding: 0.625rem 1.5rem;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+      }
+
+      .btn-outline-primary {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 8px;
+        padding: 0.625rem 1.5rem;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+
+      .btn-outline-primary:hover {
+        background: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.2);
+      }
+
+      /* Forms */
+      .form-control,
+      .form-select {
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: var(--transition);
+      }
+
+      .form-control:focus,
+      .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+      }
+
+      /* Footer */
+      .footer {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+        padding: 3rem 0 2rem;
+        margin-top: auto;
+      }
+
+      .footer h5 {
+        color: #f8fafc;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+      }
+
+      .footer p {
+        color: #cbd5e1;
+        line-height: 1.6;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Status Badges */
+      .badge {
+        padding: 0.35em 0.65em;
+        font-weight: 500;
+        border-radius: 6px;
+      }
+
+      /* Tables */
+      .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+      }
+
+      .table thead th {
+        background-color: var(--primary-light);
+        border-bottom: 2px solid var(--primary-color);
+        font-weight: 600;
+        padding: 1rem;
+      }
+
+      /* Stats Cards */
+      .stat-card {
+        
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        line-height: 1;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .navbar-nav {
+          padding: 1rem 0;
+        }
+
+        .nav-link {
+          margin: 0.25rem 0;
+        }
+
+        .stat-card {
+          margin-bottom: 1rem;
+        }
+      }
+
+      /* Theme Switch */
+      .theme-switch {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        cursor: pointer;
+        border: none;
+      }
+
+      .navbar-dark .theme-switch {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .theme-switch:hover {
+        background: rgba(0, 0, 0, 0.1);
+        transform: scale(1.1);
+      }
+
+      .navbar-dark .theme-switch:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
     </style>
 
     {% block extra_css %}{% endblock %}
   </head>
   <body class="d-flex flex-column min-vh-100">
     <!-- Modern Navigation -->
-    <!-- Enhanced Modern Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container">
-        <!-- Brand with Animation -->
-        <a class="navbar-brand" href="{{ url_for('main.index') }}">
-          <div class="d-flex align-items-center">
-            <div class="logo-wrapper position-relative me-2">
-              <i class="bi bi-building fs-4"></i>
-              <span class="logo-badge">🎓</span>
-            </div>
-            <div class="d-flex flex-column">
-              <span class="fw-bold fs-5">Бронирование аудиторий</span>
-              <small class="text-light opacity-75 d-none d-lg-block">Учебная система</small>
-            </div>
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+          <div class="me-2">
+            <i class="bi bi-building-fill fs-3"></i>
+          </div>
+          <div class="d-flex flex-column">
+            <span class="fw-bold fs-4">Аудитории</span>
+            <small class="text-muted opacity-75 d-none d-md-block">Система бронирования</small>
           </div>
         </a>
 
-        <!-- Theme Toggle & Mobile Menu -->
-        <div class="d-flex align-items-center order-lg-3">
-          <!-- Notification Bell (optional) -->
-          {% if current_user.is_authenticated %}
-          <div class="dropdown me-2">
-            <button
-              class="btn btn-outline-light position-relative p-2"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i class="bi bi-bell"></i>
-              <span
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              >
-                3
-              </span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><h6 class="dropdown-header">Уведомления</h6></li>
-              <li><a class="dropdown-item" href="#">Новое бронирование подтверждено</a></li>
-              <li><a class="dropdown-item" href="#">Напоминание о занятии</a></li>
-              <li><a class="dropdown-item" href="#">Системное обновление</a></li>
-              <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item text-center" href="#">Все уведомления</a></li>
-            </ul>
-          </div>
-          {% endif %}
-
-          <!-- Theme Toggle -->
-          <button id="themeToggle" class="btn btn-outline-light me-2" title="Сменить тему">
-            <i class="bi bi-moon-fill"></i>
-          </button>
-
-          <!-- Mobile Toggle Button -->
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarMain"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
+        <!-- Mobile Toggle -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarMain"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
         <!-- Main Navigation -->
-        <div class="collapse navbar-collapse order-lg-2" id="navbarMain">
+        <div class="collapse navbar-collapse" id="navbarMain">
           <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.index') }}">
-                <div class="nav-icon-wrapper">
-                  <i class="bi bi-house-door"></i>
-                </div>
-                <span class="nav-text">Главная</span>
-                <span class="nav-hover-line"></span>
+              <a
+                class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}"
+                href="{{ url_for('main.index') }}"
+              >
+                <i class="bi bi-house-door me-1"></i>Главная
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.classrooms') }}">
-                <div class="nav-icon-wrapper">
-                  <i class="bi bi-door-closed"></i>
-                </div>
-                <span class="nav-text">Аудитории</span>
-                <span class="nav-hover-line"></span>
+              <a
+                class="nav-link {% if request.endpoint == 'main.classrooms' %}active{% endif %}"
+                href="{{ url_for('main.classrooms') }}"
+              >
+                <i class="bi bi-door-closed me-1"></i>Аудитории
               </a>
             </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.booking') }}">
-                <div class="nav-icon-wrapper">
-                  <i class="bi bi-calendar-plus"></i>
-                </div>
-                <span class="nav-text">Бронирование</span>
-                <span class="nav-hover-line"></span>
+              <a
+                class="nav-link {% if request.endpoint == 'main.booking' %}active{% endif %}"
+                href="{{ url_for('main.booking') }}"
+              >
+                <i class="bi bi-calendar-plus me-1"></i>Бронирование
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.profile') }}">
-                <div class="nav-icon-wrapper">
-                  <i class="bi bi-person-circle"></i>
-                </div>
-                <span class="nav-text">Профиль</span>
-                <span class="nav-hover-line"></span>
+              <a
+                class="nav-link {% if request.endpoint == 'main.profile' %}active{% endif %}"
+                href="{{ url_for('main.profile') }}"
+              >
+                <i class="bi bi-person-circle me-1"></i>Профиль
               </a>
             </li>
             {% if current_user.role in ['teacher', 'admin'] %}
             <li class="nav-item">
-              <a class="nav-link text-warning" href="{{ url_for('main.admin_bookings') }}">
-                <div class="nav-icon-wrapper">
-                  <i class="bi bi-gear"></i>
-                </div>
-                <span class="nav-text">Управление</span>
-                <span class="nav-hover-line"></span>
+              <a
+                class="nav-link text-warning {% if request.endpoint == 'main.admin_bookings' %}active{% endif %}"
+                href="{{ url_for('main.admin_bookings') }}"
+              >
+                <i class="bi bi-gear me-1"></i>Управление
               </a>
             </li>
             {% endif %} {% endif %}
           </ul>
 
-          <!-- User Menu -->
-          <ul class="navbar-nav order-lg-4">
+          <!-- Right Section -->
+          <div class="d-flex align-items-center gap-2">
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="theme-switch" title="Сменить тему">
+              <i class="bi bi-moon-fill"></i>
+            </button>
+
+            <!-- User Menu -->
             {% if current_user.is_authenticated %}
-            <li class="nav-item dropdown">
+            <div class="dropdown">
               <a
-                class="nav-link dropdown-toggle d-flex align-items-center"
                 href="#"
-                role="button"
+                class="d-flex align-items-center text-decoration-none dropdown-toggle"
                 data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
               >
-                <div class="position-relative me-2">
-                  <div class="user-avatar">
-                    <i class="bi bi-person-circle fs-4"></i>
-                    <span class="user-status bg-success"></span>
-                  </div>
+                <div class="user-avatar me-2">
+                  {{ current_user.username[:2]|upper }}
+                  <span class="user-status bg-success"></span>
                 </div>
-                <div class="d-flex flex-column text-start">
+                <div class="d-none d-md-flex flex-column text-start">
                   <span class="fw-semibold">{{ current_user.username }}</span>
-                  <small class="d-flex align-items-center gap-1">
-                    {% if current_user.role == 'teacher' %}
-                    <i class="bi bi-mortarboard text-warning"></i>
-                    <span class="text-warning">Преподаватель</span>
-                    {% elif current_user.role == 'admin' %}
-                    <i class="bi bi-shield-check text-danger"></i>
-                    <span class="text-danger">Администратор</span>
-                    {% else %}
-                    <i class="bi bi-person text-info"></i>
-                    <span class="text-info">Студент</span>
-                    {% endif %}
+                  <small class="text-muted">
+                    {% if current_user.role == 'teacher' %}Преподаватель{% elif current_user.role
+                    == 'admin' %}Администратор{% else %}Студент{% endif %}
                   </small>
                 </div>
               </a>
               <ul class="dropdown-menu dropdown-menu-end shadow-lg">
                 <li class="dropdown-header">
                   <div class="d-flex align-items-center">
-                    <div class="me-2">
-                      <i class="bi bi-person-circle fs-3"></i>
+                    <div class="user-avatar me-2">
+                      {{ current_user.username[:2]|upper }}
                     </div>
                     <div>
                       <h6 class="mb-0">{{ current_user.username }}</h6>
@@ -275,20 +479,18 @@
                   </a>
                 </li>
               </ul>
-            </li>
+            </div>
             {% else %}
-            <li class="nav-item">
-              <div class="d-flex gap-2">
-                <a class="btn btn-outline-light" href="{{ url_for('auth.login') }}">
-                  <i class="bi bi-box-arrow-in-right me-1"></i>Войти
-                </a>
-                <a class="btn btn-primary btn-glow" href="{{ url_for('auth.register') }}">
-                  <i class="bi bi-person-plus me-1"></i>Регистрация
-                </a>
-              </div>
-            </li>
+            <div class="d-flex gap-2">
+              <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+              </a>
+              <a class="btn btn-primary" href="{{ url_for('auth.register') }}">
+                <i class="bi bi-person-plus me-1"></i>Регистрация
+              </a>
+            </div>
             {% endif %}
-          </ul>
+          </div>
         </div>
       </div>
     </nav>
@@ -298,7 +500,7 @@
       {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for
       category, message in messages %}
       <div
-        class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow"
+        class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show shadow-lg border-0"
         role="alert"
       >
         <div class="d-flex align-items-center">
@@ -313,20 +515,20 @@
       {% endfor %} {% endif %} {% endwith %}
     </div>
 
-    <!-- Attractors removed -->
-
     <!-- Main Content -->
     <main class="flex-grow-1 py-4">
-      <div class="container fade-in">{% block content %}{% endblock %}</div>
+      <div class="container fade-in">
+        {% block content %}{% endblock %}
+      </div>
     </main>
 
-    <!-- Modern Footer -->
+    <!-- Footer -->
     <footer class="footer">
       <div class="container">
         <div class="row g-4">
           <div class="col-lg-4">
             <h5><i class="bi bi-building me-2"></i>Система бронирования</h5>
-            <p class="text-light opacity-75">
+            <p>
               Современная платформа для удобного бронирования учебных помещений. Создано для
               студентов и преподавателей.
             </p>
@@ -356,7 +558,7 @@
         </div>
         <hr class="my-4 opacity-25" />
         <div class="text-center">
-          <p class="mb-0 text-light opacity-75">
+          <p class="mb-0">
             &copy; 2024 Учебное заведение. Все права защищены.
           </p>
         </div>
@@ -373,11 +575,7 @@
         const currentTheme = localStorage.getItem('theme') || 'light';
 
         document.documentElement.setAttribute('data-bs-theme', currentTheme);
-
-        themeToggle.innerHTML =
-          currentTheme === 'dark'
-            ? '<i class="bi bi-sun-fill"></i>'
-            : '<i class="bi bi-moon-fill"></i>';
+        updateThemeIcon(currentTheme);
 
         themeToggle.addEventListener('click', function () {
           const currentTheme = document.documentElement.getAttribute('data-bs-theme');
@@ -385,16 +583,17 @@
 
           document.documentElement.setAttribute('data-bs-theme', newTheme);
           localStorage.setItem('theme', newTheme);
+          updateThemeIcon(newTheme);
+        });
 
-          this.innerHTML =
-            newTheme === 'dark'
+        function updateThemeIcon(theme) {
+          themeToggle.innerHTML =
+            theme === 'dark'
               ? '<i class="bi bi-sun-fill"></i>'
               : '<i class="bi bi-moon-fill"></i>';
-        });
+        }
       });
     </script>
-
-    <!-- Attractors JS removed -->
 
     {% block extra_js %}{% endblock %}
   </body>

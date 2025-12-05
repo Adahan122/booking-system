@@ -434,9 +434,21 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        fetch(`/api/check_availability/${classroomId}/${date}/${startTime}/${endTime}`)
+        const url = `/api/check_availability/${encodeURIComponent(classroomId)}/${encodeURIComponent(date)}/${encodeURIComponent(startTime)}/${encodeURIComponent(endTime)}`;
+        
+        fetch(url)
             .then(response => response.json())
             .then(data => {
+                if (data.error) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Ошибка:</strong> ${data.error}
+                        </div>
+                    `;
+                    return;
+                }
+                
                 if (data.is_available) {
                     resultDiv.innerHTML = `
                         <div class="alert alert-success">
@@ -452,6 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                 } else {
+                    const conflict = data.conflict || {};
                     resultDiv.innerHTML = `
                         <div class="alert alert-danger">
                             <i class="fas fa-times-circle me-2"></i>
@@ -459,9 +472,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             Время конфликтует с существующим бронированием.
                             <div class="mt-2">
                                 <strong>Детали конфликта:</strong><br>
-                                Пользователь: ${data.conflict.user}<br>
-                                Время: ${data.conflict.time}<br>
-                                Цель: ${data.conflict.purpose}
+                                Пользователь: ${conflict.user || '—'}<br>
+                                Время: ${conflict.time || '—'}<br>
+                                Цель: ${conflict.purpose || '—'}
                             </div>
                         </div>
                     `;
@@ -471,9 +484,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultDiv.innerHTML = `
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        Ошибка при проверке доступности
+                        Ошибка при проверке доступности: ${error.message}
                     </div>
                 `;
+                console.error('Availability check error:', error);
             });
     });
     

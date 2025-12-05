@@ -10,10 +10,21 @@
             <div class="card-body">
                 <form method="POST" action="">
                     {{ form.hidden_tag() }}
+                    {% if preselected_classroom %}
+                    <div class="mb-3">
+                        <label class="form-label">Аудитория</label>
+                        <div class="alert alert-info py-2">
+                            <strong>{{ preselected_classroom.room_number }}</strong> 
+                            (вместимость: {{ preselected_classroom.capacity }})
+                        </div>
+                        {{ form.classroom_id(class="form-select d-none") }}
+                    </div>
+                    {% else %}
                     <div class="mb-3">
                         {{ form.classroom_id.label(class="form-label") }}
                         {{ form.classroom_id(class="form-select") }}
                     </div>
+                    {% endif %}
                     <div class="mb-3">
                         {{ form.booking_date.label(class="form-label") }}
                         {{ form.booking_date(class="form-control", type="date") }}
@@ -39,112 +50,324 @@
                     <div class="d-grid">
                         {{ form.submit(class="btn btn-success", id='bookingSubmit') }}
                     </div>
-                    <div class="d-flex gap-2 mt-2">
-                        <button type="button" id="checkAvailabilityBtn" class="btn btn-outline-primary">Проверить доступность</button>
-                        <div id="availabilityStatus" class="align-self-center"></div>
-                    </div>
                 </form>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-    <div class="card">
-        <div class="card-header">
-            <h5><i class="fas fa-info-circle"></i> Как работает бронирование</h5>
+    <div class="card border-0 shadow-lg">
+    <div class="card-header border-0 bg-gradient-primary text-white position-relative overflow-hidden">
+        <!-- Декоративные элементы -->
+        <div class="position-absolute top-0 end-0 w-50 h-100 opacity-10">
+            <i class="bi bi-info-circle-fill fs-1 position-absolute" style="right: 20px; top: 50%; transform: translateY(-50%);"></i>
         </div>
-        <div class="card-body">
+        
+        <div class="position-relative z-1">
+            <div class="d-flex align-items-center">
+                <div class="feature-icon-wrapper me-3">
+                    <i class="bi bi-info-circle-fill fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1">Как работает бронирование</h5>
+                    <small class="opacity-75">Процесс от создания до завершения</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-body p-4">
+        <!-- Таймлайн -->
+        <div class="timeline-wrapper">
             <div class="timeline">
+                <!-- Шаг 1 -->
                 <div class="timeline-item">
-                    <div class="timeline-marker bg-success"></div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-success">
+                            <i class="bi bi-calendar-check-fill text-white"></i>
+                        </div>
+                        <div class="timeline-line bg-success"></div>
+                    </div>
                     <div class="timeline-content">
-                        <h6>Бронирование создано</h6>
-                        <small>Аудитория зарезервирована за вами</small>
+                        <div class="timeline-content-inner">
+                            <h6 class="fw-bold mb-1">
+                                <span class="step-badge bg-success text-white me-2">1</span>
+                                Бронирование создано
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                Аудитория зарезервирована за вами. Вы получите подтверждение на email.
+                            </p>
+                            <div class="mt-2">
+                                <span class="badge bg-success bg-opacity-10 text-success">
+                                    <i class="bi bi-check-circle me-1"></i> Автоматически
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- Шаг 2 -->
                 <div class="timeline-item">
-                    <div class="timeline-marker bg-primary"></div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-primary">
+                            <i class="bi bi-play-circle-fill text-white"></i>
+                        </div>
+                        <div class="timeline-line bg-primary"></div>
+                    </div>
                     <div class="timeline-content">
-                        <h6>Время начала</h6>
-                        <small>Вы можете использовать аудиторию</small>
+                        <div class="timeline-content-inner">
+                            <h6 class="fw-bold mb-1">
+                                <span class="step-badge bg-primary text-white me-2">2</span>
+                                Время начала
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                Вы можете использовать аудиторию. Убедитесь, что у вас есть доступ.
+                            </p>
+                            <div class="mt-2">
+                                <span class="badge bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-clock me-1"></i> Напоминание за 15 мин
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- Шаг 3 -->
                 <div class="timeline-item">
-                    <div class="timeline-marker bg-secondary"></div>
+                    <div class="timeline-marker-wrapper">
+                        <div class="timeline-marker bg-warning">
+                            <i class="bi bi-hourglass-split text-white"></i>
+                        </div>
+                        <div class="timeline-line bg-warning"></div>
+                    </div>
                     <div class="timeline-content">
-                        <h6>Время окончания</h6>
-                        <small>Аудитория автоматически освобождается</small>
+                        <div class="timeline-content-inner">
+                            <h6 class="fw-bold mb-1">
+                                <span class="step-badge bg-warning text-white me-2">3</span>
+                                Время окончания
+                            </h6>
+                            <p class="text-muted small mb-0">
+                                Аудитория автоматически освобождается. Пожалуйста, покиньте помещение.
+                            </p>
+                            <div class="mt-2">
+                                <span class="badge bg-warning bg-opacity-10 text-warning">
+                                    <i class="bi bi-bell me-1"></i> Уведомление за 5 мин
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Информационный блок с временем -->
+        <div class="info-card mt-4">
+            <div class="d-flex align-items-center">
+                <div class="info-icon bg-info bg-opacity-10 text-info p-3 rounded-circle me-3">
+                    <i class="bi bi-clock-fill fs-4"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 fw-bold">Текущее время системы</h6>
+                            <p class="text-muted small mb-0">Все бронирования синхронизированы</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="current-time-display">
+                                <div class="time-value fs-3 fw-bold text-primary">{{ now.strftime('%H:%M') }}</div>
+                                <small class="text-muted">{{ now.strftime('%d.%m.%Y') }}</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="alert alert-info mt-3">
-                <i class="fas fa-clock me-2"></i>
-                <strong>Текущее время:</strong> 
-                <span class="current-time">{{ now.strftime('%H:%M') }}</span>
+            <div class="progress mt-3" style="height: 4px;">
+                <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" 
+                     style="width: 100%"></div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Стили для карточки */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%) !important;
+}
+
+.feature-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Стили для таймлайна */
+.timeline-wrapper {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline-item {
+    display: flex;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker-wrapper {
+    position: relative;
+    margin-right: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timeline-marker {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    position: relative;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 40px;
+    width: 3px;
+    height: calc(100% + 1.5rem);
+    z-index: 1;
+}
+
+.timeline-item:last-child .timeline-line {
+    display: none;
+}
+
+.timeline-content {
+    flex: 1;
+    padding-top: 0.25rem;
+}
+
+.timeline-content-inner {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.timeline-content-inner:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-color: #d1d5db;
+}
+
+.step-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Информационная карточка с временем */
+.info-card {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(67, 97, 238, 0.05) 0%, transparent 50%);
+}
+
+.info-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-icon i {
+    font-size: 1.5rem;
+}
+
+.current-time-display {
+    background: white;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+}
+
+.time-value {
+    line-height: 1;
+}
+
+/* Анимация прогресс-бара */
+@keyframes progressBarAnimation {
+    0% { background-position: 0 0; }
+    100% { background-position: 40px 0; }
+}
+
+.progress-bar-animated {
+    animation: progressBarAnimation 2s linear infinite;
+    background-size: 40px 40px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .timeline-content-inner {
+        padding: 0.75rem;
+    }
+    
+    .feature-icon-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .info-card {
+        padding: 1rem;
+    }
+}
+</style>
+</div>
 </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    // Availability check logic
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form');
-        const checkBtn = document.getElementById('checkAvailabilityBtn');
-        const statusEl = document.getElementById('availabilityStatus');
-        const submitBtn = document.getElementById('bookingSubmit');
-
-        function showStatus(message, type='secondary'){
-            statusEl.innerHTML = `<span class="badge bg-${type}">${message}</span>`;
-        }
-
-        if (!checkBtn || !form) return;
-
-        checkBtn.addEventListener('click', function(){
-            const classroom = form.querySelector('[name="classroom_id"]').value;
-            const bookingDate = form.querySelector('[name="booking_date"]').value;
-            const start = form.querySelector('[name="start_time"]').value;
-            const end = form.querySelector('[name="end_time"]').value;
-
-            if (!classroom || !bookingDate || !start || !end) {
-                showStatus('Выберите аудиторию, дату и время', 'warning');
-                return;
-            }
-
-            showStatus('Проверка...', 'info');
-
-            const url = `/api/check_availability/${encodeURIComponent(classroom)}/${encodeURIComponent(bookingDate)}/${encodeURIComponent(start)}/${encodeURIComponent(end)}`;
-
-            fetch(url, { credentials: 'same-origin' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.error) {
-                        showStatus('Ошибка: ' + data.error, 'danger');
-                        submitBtn.disabled = false;
-                        return;
-                    }
-
-                    if (data.is_available) {
-                        showStatus('Аудитория доступна ✔', 'success');
-                        submitBtn.disabled = false;
-                    } else {
-                        const conflict = data.conflict || {};
-                        const info = conflict.time ? ` (${conflict.time}${conflict.user ? ' — ' + conflict.user : ''})` : '';
-                        showStatus('Занято' + info, 'danger');
-                        // Prevent immediate booking when occupied
-                        submitBtn.disabled = true;
-                    }
-                })
-                .catch(err => {
-                    showStatus('Сетевой сбой', 'danger');
-                    console.error(err);
-                    submitBtn.disabled = false;
-                });
-        });
-    });
-</script>
-{% endblock %}
+{% block extra_js %}{% endblock %}

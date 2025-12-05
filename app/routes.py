@@ -237,6 +237,14 @@ def booking():
     classrooms = Classroom.query.filter_by(is_active=True).all()
     form.classroom_id.choices = [(c.id, f"Аудитория {c.room_number} (вместимость: {c.capacity})") for c in classrooms]
     
+    # Если приходит с параметром classroom, заполняем форму автоматически
+    selected_classroom_id = request.args.get('classroom', type=int)
+    preselected_classroom = None
+    if selected_classroom_id:
+        preselected_classroom = Classroom.query.get(selected_classroom_id)
+        if preselected_classroom:
+            form.classroom_id.data = selected_classroom_id
+    
     if form.validate_on_submit():
         start_time = datetime.strptime(form.start_time.data, '%H:%M').time()
         end_time = datetime.strptime(form.end_time.data, '%H:%M').time()
@@ -364,7 +372,7 @@ def booking():
         flash(f'Бронирование успешно создано и {status_msg}!', 'success')
         return redirect(url_for('main.profile'))
     
-    return render_template('booking.html', title='Бронирование', form=form)
+    return render_template('booking.html', title='Бронирование', form=form, preselected_classroom=preselected_classroom)
 
 
 
