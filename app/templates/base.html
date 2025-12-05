@@ -266,7 +266,6 @@
 
       /* Stats Cards */
       .stat-card {
-        
         border-radius: var(--border-radius);
         padding: 1.5rem;
         box-shadow: var(--box-shadow);
@@ -295,17 +294,106 @@
       }
 
       /* Responsive Design */
-      @media (max-width: 768px) {
+      @media (max-width: 991px) {
+        .navbar-collapse {
+          margin-top: 1rem;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
+          padding-top: 1rem;
+        }
+
+        .navbar-dark .navbar-collapse {
+          border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
         .navbar-nav {
-          padding: 1rem 0;
+          padding: 0.5rem 0;
         }
 
         .nav-link {
           margin: 0.25rem 0;
+          padding: 0.5rem 0.75rem !important;
+        }
+
+        .d-flex.align-items-center.gap-2 {
+          flex-wrap: wrap;
+          gap: 0.5rem !important;
+          justify-content: flex-start;
+          margin-top: 1rem;
+        }
+
+        .user-avatar {
+          width: 36px;
+          height: 36px;
+          font-size: 0.75rem;
+        }
+
+        .dropdown-menu {
+          min-width: 220px;
+        }
+
+        .theme-switch {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .navbar-brand div {
+          display: flex !important;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .navbar-brand .me-2 {
+          margin-right: 0.5rem !important;
+        }
+
+        .navbar-brand span {
+          font-size: 1rem;
+        }
+
+        .navbar-brand small {
+          display: none !important;
+        }
+
+        .user-avatar {
+          width: 32px;
+          height: 32px;
+          font-size: 0.7rem;
+        }
+
+        .d-none.d-md-flex {
+          display: none !important;
+        }
+
+        .d-flex.align-items-center.gap-2 {
+          width: 100%;
+          margin-top: 0.75rem;
+        }
+
+        .btn {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+          flex: 1 1 auto;
+          min-width: 120px;
+        }
+
+        .btn i {
+          display: none;
+        }
+
+        .dropdown-menu-end {
+          right: 0 !important;
+          left: auto !important;
         }
 
         .stat-card {
           margin-bottom: 1rem;
+        }
+
+        .container {
+          padding-left: 1rem;
+          padding-right: 1rem;
         }
       }
 
@@ -413,9 +501,9 @@
           </ul>
 
           <!-- Right Section -->
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2 ms-auto ms-lg-0">
             <!-- Theme Toggle -->
-            <button id="themeToggle" class="theme-switch" title="Сменить тему">
+            <button id="themeToggle" class="theme-switch flex-shrink-0" title="Сменить тему">
               <i class="bi bi-moon-fill"></i>
             </button>
 
@@ -434,17 +522,15 @@
                 <div class="d-none d-md-flex flex-column text-start">
                   <span class="fw-semibold">{{ current_user.username }}</span>
                   <small class="text-muted">
-                    {% if current_user.role == 'teacher' %}Преподаватель{% elif current_user.role
-                    == 'admin' %}Администратор{% else %}Студент{% endif %}
+                    {% if current_user.role == 'teacher' %}Преподаватель{% elif current_user.role ==
+                    'admin' %}Администратор{% else %}Студент{% endif %}
                   </small>
                 </div>
               </a>
               <ul class="dropdown-menu dropdown-menu-end shadow-lg">
                 <li class="dropdown-header">
                   <div class="d-flex align-items-center">
-                    <div class="user-avatar me-2">
-                      {{ current_user.username[:2]|upper }}
-                    </div>
+                    <div class="user-avatar me-2">{{ current_user.username[:2]|upper }}</div>
                     <div>
                       <h6 class="mb-0">{{ current_user.username }}</h6>
                       <small class="text-muted">{{ current_user.email }}</small>
@@ -456,14 +542,6 @@
                   <a class="dropdown-item" href="{{ url_for('main.profile') }}">
                     <i class="bi bi-person me-2"></i>Мой профиль
                   </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    <i class="bi bi-calendar-check me-2"></i>Мои бронирования
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#"> <i class="bi bi-gear me-2"></i>Настройки </a>
                 </li>
                 {% if current_user.role in ['teacher', 'admin'] %}
                 <li>
@@ -481,12 +559,15 @@
               </ul>
             </div>
             {% else %}
-            <div class="d-flex gap-2">
-              <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">
-                <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+            <div class="d-flex gap-2 flex-wrap">
+              <a class="btn btn-outline-primary flex-shrink-0" href="{{ url_for('auth.login') }}">
+                <i class="bi bi-box-arrow-in-right me-1 d-none d-sm-inline"></i
+                ><span class="d-sm-none">Войти</span><span class="d-none d-sm-inline">Войти</span>
               </a>
-              <a class="btn btn-primary" href="{{ url_for('auth.register') }}">
-                <i class="bi bi-person-plus me-1"></i>Регистрация
+              <a class="btn btn-primary flex-shrink-0" href="{{ url_for('auth.register') }}">
+                <i class="bi bi-person-plus me-1 d-none d-sm-inline"></i
+                ><span class="d-sm-none">Рег.</span
+                ><span class="d-none d-sm-inline">Регистрация</span>
               </a>
             </div>
             {% endif %}
@@ -517,9 +598,7 @@
 
     <!-- Main Content -->
     <main class="flex-grow-1 py-4">
-      <div class="container fade-in">
-        {% block content %}{% endblock %}
-      </div>
+      <div class="container fade-in">{% block content %}{% endblock %}</div>
     </main>
 
     <!-- Footer -->
@@ -558,9 +637,7 @@
         </div>
         <hr class="my-4 opacity-25" />
         <div class="text-center">
-          <p class="mb-0">
-            &copy; 2024 Учебное заведение. Все права защищены.
-          </p>
+          <p class="mb-0">&copy; 2024 Учебное заведение. Все права защищены.</p>
         </div>
       </div>
     </footer>
@@ -588,9 +665,7 @@
 
         function updateThemeIcon(theme) {
           themeToggle.innerHTML =
-            theme === 'dark'
-              ? '<i class="bi bi-sun-fill"></i>'
-              : '<i class="bi bi-moon-fill"></i>';
+            theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
         }
       });
     </script>
