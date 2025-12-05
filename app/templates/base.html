@@ -78,59 +78,7 @@
       .navbar-brand:hover {
         transform: translateY(-1px);
       }
-      /* Attractor animation (two objects that "прилипают") */
-      .attractors {
-        position: fixed;
-        left: 50%;
-        top: 18%;
-        transform: translateX(-50%);
-        pointer-events: none;
-        z-index: 1050;
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-
-      .attractor {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 30% 30%, #fff8, rgba(255, 255, 255, 0));
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        transform: translateY(0) scale(1);
-        transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.3s;
-      }
-
-      .attractor.left {
-        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-      }
-      .attractor.right {
-        background: linear-gradient(135deg, var(--secondary-color), #6c63ff);
-      }
-
-      /* When body has class .attract, move elements toward each other and slightly overlap */
-      .attractors.attract .attractor.left {
-        transform: translateX(24px) scale(1.03);
-      }
-      .attractors.attract .attractor.right {
-        transform: translateX(-24px) scale(1.03);
-      }
-
-      /* Small bounce when they touch */
-      .attractors.attract .attractor {
-        animation: pulse 1s ease-in-out 1;
-      }
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.08);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
+      /* Attractors removed (user requested) */
 
       /* Page loader removed per user request */
     </style>
@@ -365,11 +313,7 @@
       {% endfor %} {% endif %} {% endwith %}
     </div>
 
-    <!-- Attractors (two objects) -->
-    <div class="attractors" id="globalAttractors" aria-hidden="true">
-      <div class="attractor left" id="attractorLeft"></div>
-      <div class="attractor right" id="attractorRight"></div>
-    </div>
+    <!-- Attractors removed -->
 
     <!-- Main Content -->
     <main class="flex-grow-1 py-4">
@@ -450,15 +394,7 @@
       });
     </script>
 
-    <script>
-      // Attractors animation trigger (loader removed)
-      window.playAttract = function (durationMs = 1200) {
-        const container = document.getElementById('globalAttractors');
-        if (!container) return;
-        container.classList.add('attract');
-        setTimeout(() => container.classList.remove('attract'), durationMs);
-      };
-    </script>
+    <!-- Attractors JS removed -->
 
     {% block extra_js %}{% endblock %}
   </body>
