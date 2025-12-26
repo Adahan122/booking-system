@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Динамическое обновление времени
     function updateTime() {
         const timeElements = document.querySelectorAll('.current-time');
         const now = new Date();

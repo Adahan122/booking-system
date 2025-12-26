@@ -1,4 +1,4 @@
-// Minimal placeholder for site JavaScript
+
 (function () {
   'use strict';
   document.addEventListener('DOMContentLoaded', function () {

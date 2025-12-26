@@ -28,15 +28,13 @@ def index():
 
 @main_bp.route('/classrooms')
 def classrooms():
-    # Получаем параметры фильтра из запроса
+
     status_filter = request.args.get('status', 'all')
     equipment_filter = request.args.get('equipment', 'all')
     floor_filter = request.args.get('floor', 'all')
-    
-    # Базовый запрос
+
     query = Classroom.query.filter_by(is_active=True)
     
-    # Применяем фильтры
     if equipment_filter != 'all':
         if equipment_filter == 'projector':
             query = query.filter_by(has_projector=True)
